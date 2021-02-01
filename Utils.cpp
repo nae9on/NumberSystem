@@ -35,7 +35,6 @@ std::string  outbits(T x){
         }
     }
 
-    Binary << std::endl;
     return Binary.str();
 }
 
@@ -43,6 +42,6 @@ template std::string outbits<float>(float);
 
 std::string char2binary(int Number){
     std::stringstream Binary;
-    Binary << std::bitset<8>(Number) << std::endl;
+    Binary << std::bitset<8>(Number);
     return Binary.str();
 }

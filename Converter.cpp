@@ -55,6 +55,7 @@ CConverter::CConverter(QWidget* Parent)
     m_Display2->setFont(Font2);
     Display2Label->setFont(Font2);
 
+    // Create Note
     QLabel* Note = new QLabel(QString("Note: clear fractional part for non-floating representation"));
 
     // Create button

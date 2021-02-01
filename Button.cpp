@@ -1,4 +1,4 @@
-#include "ButtonC.h"
+#include "Button.h"
 
 CButton::CButton(const QString& Text, QWidget* Parent)
     : QToolButton(Parent)

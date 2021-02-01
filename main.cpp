@@ -4,7 +4,7 @@
  * https://doc.qt.io/archives/qt-4.8/metaobjects.html#meta-object-system
  */
 
-#include "ConverterC.h"
+#include "Converter.h"
 #include <QApplication>
 
 #include <iostream>
@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     QApplication QApp(argc, argv);
 
     CConverter Converter;
-    Converter.show();
+    Converter.show(); // Shows the widget and its child widgets
 
     std::cout << "End of main" << std::endl;
 

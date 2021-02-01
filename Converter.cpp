@@ -1,5 +1,6 @@
-#include "ConverterC.h"
-#include "ButtonC.h"
+#include "Converter.h"
+#include "Button.h"
+#include "Utils.h"
 
 #include <QGridLayout>
 #include <QLineEdit>
@@ -9,46 +10,88 @@
 #include <bitset>
 #include <sstream>
 
+namespace
+{
+int MaxDecimalLength{7};
+int MaxFractionalLength{7};
+int MaxBinaryLength{40};
+int MaxWidth{10};
+}
+
 CConverter::CConverter(QWidget* Parent)
     : QWidget(Parent) // When inherting from QWidget, pass parent argument in constructor to the base class's constructor
 {
-    // Create and set the display 1
+    // Create and set the integral display 1
+    QLabel* Display1Label = new QLabel(QString("Decimal"));
     m_Display1 = new QLineEdit("0");
-    m_Display1->setAlignment(Qt::AlignLeft);
-    m_Display1->setMaxLength(3);
+    m_Display1->setAlignment(Qt::AlignRight);
+    m_Display1->setMaxLength(MaxDecimalLength);
+    m_Display1->setMaximumWidth(MaxWidth*MaxDecimalLength);
     QFont Font1 = m_Display1->font();
-    Font1.setPointSize(Font1.pointSize() + 8);
+    Font1.setPointSize(Font1.pointSize() + 1);
     m_Display1->setFont(Font1);
+    Display1Label->setFont(Font1);
+
+    // Create and set the fractional display 1
+    QLabel* Display1Label_Frac = new QLabel(QString("Fraction"));
+    m_Display1_Frac = new QLineEdit("0");
+    m_Display1_Frac->setAlignment(Qt::AlignLeft);
+    m_Display1_Frac->setMaxLength(MaxFractionalLength);
+    m_Display1_Frac->setMaximumWidth(MaxWidth*MaxFractionalLength);
+    QFont Font1_Frac = m_Display1_Frac->font();
+    Font1_Frac.setPointSize(Font1_Frac.pointSize() + 1);
+    m_Display1_Frac->setFont(Font1_Frac);
+    Display1Label_Frac->setFont(Font1_Frac);
 
     // Create and set the display 2
-    m_Display2 = new QLineEdit("0");
+    QLabel* Display2Label = new QLabel(QString("Binary"));
+    m_Display2 = new QLineEdit("0 00000000 00000000000000000000000");
     m_Display2->setReadOnly(true);
     m_Display2->setAlignment(Qt::AlignRight);
-    m_Display2->setMaxLength(8);
+    m_Display2->setMaxLength(MaxBinaryLength);
+    m_Display2->setMaximumWidth(MaxWidth*MaxBinaryLength);
     QFont Font2 = m_Display2->font();
-    Font2.setPointSize(Font2.pointSize() + 8);
+    Font2.setPointSize(Font2.pointSize() + 1);
     m_Display2->setFont(Font2);
+    Display2Label->setFont(Font2);
+
+    QLabel* Note = new QLabel(QString("Note: clear fractional part for non-floating representation"));
 
     // Create button
-    m_DecimalToBinary = CreateButton(QString("DecimalToBinary"), SLOT(ButtonClicked()));
-    QCommonStyle Style;
-    m_DecimalToBinary->setIcon(Style.standardIcon(QStyle::SP_ArrowRight));
+    m_DecimalToBinary = CreateButton(tr("="), SLOT(ButtonClicked()));
+
+    // Create dot label
+    QLabel* Dot = new QLabel(QString("."));
 
     // Create main layout and arrange buttons
     QGridLayout* MainLayout = new QGridLayout;
     MainLayout->setSizeConstraint(QLayout::SetFixedSize);
 
-    // Add display 1 to the main layout
+    // Add integral display 1 to the main layout
     // Pass row, column, row span and column span
-    MainLayout->addWidget(m_Display1, 0, 0, 1, 3);
+    MainLayout->addWidget(Display1Label, 0, 0, 1, 3);
+    MainLayout->addWidget(m_Display1,    1, 0, 1, 3);
+
+    // Add dot button to the main layout
+    // Pass row, column, row span and column span
+    MainLayout->addWidget(Dot, 1, 3, 1, 1);
+
+    // Add fractional display 1 to the main layout
+    // Pass row, column, row span and column span
+    MainLayout->addWidget(Display1Label_Frac, 0, 4, 1, 3);
+    MainLayout->addWidget(m_Display1_Frac,    1, 4, 1, 3);
 
     // Add DecimalToBinary button to the main layout
     // Pass row, column, row span and column span
-    MainLayout->addWidget(m_DecimalToBinary, 0, 3, 1, 1);
+    MainLayout->addWidget(m_DecimalToBinary, 1, 7, 1, 1);
 
     // Add display 2 to the main layout
     // Pass row, column, row span and column span
-    MainLayout->addWidget(m_Display2, 0, 4, 1, 8);
+    MainLayout->addWidget(Display2Label, 0, 8, 1, 3);
+    MainLayout->addWidget(m_Display2,    1, 8, 1, 3);
+
+    // Add Note
+    MainLayout->addWidget(Note, 2, 0, 1, 11);
 
     // Set the CConverter widget layout to main layout
     setLayout(MainLayout);
@@ -58,11 +101,20 @@ CConverter::CConverter(QWidget* Parent)
 // Pressing one of the buttons will emit the button's clicked() signal which will trigger the ButtonClicked() slot.
 void CConverter::ButtonClicked()
 {
-    signed char Number = static_cast<signed char>(m_Display1->text().toInt());
-    std::stringstream Binary;
-    Binary << std::bitset<8>(Number) << std::endl;
+    std::string FractionalPart = m_Display1_Frac->text().toStdString();
+
     m_Display2->clear();
-    m_Display2->setText(Binary.str().c_str());
+
+    if(FractionalPart.empty())
+    {
+        m_Display2->setText(char2binary(m_Display1->text().toInt()).c_str());
+    }
+    else
+    {
+        std::string DecimalPart = m_Display1->text().toStdString();
+        std::string Number = DecimalPart + "." + FractionalPart;
+        m_Display2->setText(outbits(std::stof(Number)).c_str());
+    }
 }
 
 CButton* CConverter::CreateButton(const QString& Text, const char* Member)

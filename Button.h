@@ -2,7 +2,7 @@
 
 #include <QToolButton>
 
-class CButton : public QToolButton
+class CButton : public QToolButton // QToolButton -> QAbstractButton -> QWidget
 {
     Q_OBJECT
 

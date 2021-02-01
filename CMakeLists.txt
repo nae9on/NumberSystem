@@ -19,10 +19,12 @@ find_package(Qt5Widgets)
 add_executable(
 "${PROJECT_NAME}"
 main.cpp
-ConverterC.h
-ConverterC.cpp
-ButtonC.h
-ButtonC.cpp
+Converter.h
+Converter.cpp
+Button.h
+Button.cpp
+Utils.h
+Utils.cpp
 )
 
 # Pass the name of the library target to target_link_libraries to use the respective library.

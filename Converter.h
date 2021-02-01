@@ -36,8 +36,9 @@ private:
     // State
     int m_Decimal{0};
 
-    // Variables associated with the display and the buttons used to covert from Decimal to Binary and vice-versa.
+    // Variables associated with the display and the buttons used to convert from Decimal to Binary and vice-versa.
     QLineEdit* m_Display1;
+    QLineEdit* m_Display1_Frac;
     QLineEdit* m_Display2;
     CButton* m_DecimalToBinary;
     CButton* m_BinaryToDecimal;

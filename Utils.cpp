@@ -1,5 +1,7 @@
 #include "Utils.h"
 
+#include <climits>
+
 template <typename T>
 std::string  outbits(T x){
 
